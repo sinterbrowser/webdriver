@@ -2890,7 +2890,96 @@ var respecConfig = {
  whose <a><code>readOnly</code> attribute</a> is set.
 
 <section>
-<h3>Element Interactability</h3>
+<h3>Element Interactibility</h3>
+
+<p>In order to determine if an element
+ can be interacted with using pointer actions,
+ WebDriver performs hit-testing to find
+ if the interaction will be able to reach the requested element.
+
+<p>An <dfn>interactible element</dfn>
+ is an <a>element</a> which is either
+ <a>pointer-interactible</a> or <a>keyboard-interactible</a>.
+
+<p>A <dfn data-lt="pointer-interactible">pointer-interactible element</dfn>
+ is defined to be the first non-transparent <a>element</a>,
+ defined by the paint order found at the centre point
+ of its rectangle that is inside the <a>viewport</a>,
+ excluding the size of any rendered scrollbars.
+
+<p>In order to produce a <dfn>pointer-interactible elements tree</dfn>
+ from an <var><a>element</a></var>:
+
+<ol>
+ <li><p>If <var>element</var> is <a>not in the same tree</a>
+  as the <a>current browsing context</a>’s <a>active document</a>,
+  return an empty sequence.
+
+ <!--
+  no need to care for scroll bars here
+  because elementsFromPoint takes care of it
+
+  this is the same as
+
+    rect.width - (rect.right - innerWidth)
+    rect.height - (rect.bottom - innerHeight)
+ -->
+ <li><p>Let <var>visible width</var> be
+  <var>element</var>’s <a>bounding rectangle</a>’s
+  (<a>max</a>(<a>x coordinate</a>, <a>x coordinate</a> + <a>width dimension</a>) –
+  the <a>current browsing context</a>’s <a>innerWidth</a>).
+
+ <li><p>Let <var>visible height</var> be
+  <var>element</var>’s <a>bounding rectangle</a>’s
+  (<a>max</a>(<a>y coordinate</a>, <a>y coordinate</a> + <a>height dimension</a>) –
+  the <a>current browsing context</a>’s <a>innerWidth</a>).
+
+ <li><p>Let <var>vertical centre offset</var>
+  be (<var>visible width</var> / 2.0).
+
+ <li><p>Let <var>horizontal centre offset</var>
+  be (<var>visible height</var> / 2.0).
+
+ <li><p>Let <var>centre point</var> be a pair of <var>element</var>’s
+  (<a>rectangle x coordinate</a> + <var>horizontal centre offset</var>)
+  and (<a>rectangle y coordinate</a> + <var>vertical centre offset</var>).
+
+ <li><p>Return the <a>elements from point</a>
+  given the coordinates <var>centre point</var>.
+</ol>
+
+<p>To <dfn>get the first pointer-interactible element</dfn>
+ given a <a>pointer-interactible elements tree</a>,
+ return with <a>success</a> the first <a>element</a>
+ which style property <code>opacity</code>
+ has the <a>computed value</a> of "1";
+ otherwise return an <a>error</a>.
+</section>
+
+<section>
+<h3>Element Displayedness</h3>
+
+<p>The visibility of an <a>element</a> is guided
+ by what is perceptually visible to the human eye.
+ In this context, an <a>element</a>'s displayedness
+ does not relate to the <a><code>visibility</code></a>
+ or <a><code>display</code></a> style properties.
+
+<p>The approach used by WebDriver to ascertain an <a>element</a>'s visibility
+ is based on crude approximations about its nature and relationship in the tree.
+ An <a>element</a> is in general to be considered visible
+ if any part of it is drawn on the canvas within the bounderies of the viewport.
+
+<p>When asked to
+ <dfn data-lt="normalize style pixel values to floating point|normalized style pixel float value">normalize style pixel values to floating point</dfn>
+ for a value <var>s</var> of the type string:
+
+<ol>
+ <li><p>Let <var>trimmed string</var> be a substring of <var>s</var>
+  where the suffix "<code>px</code>" is removed.
+
+ <li><p>Let <var>pixels</var> be the result of parsing
+  <var>trimmed string</var> as a float.
 
 <p>In order to determine if an element
  can be interacted with using pointer actions,
